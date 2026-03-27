@@ -25,7 +25,7 @@ export default function Quiz() {
     setFinished(false)
 
     fetch(API_URL)
-      .then(res => { if (!res.ok) throw new Error('Error al cargar preguntas'); return res.json() })
+      .then(res => { if (!res.ok) throw new Error('Error loading questions'); return res.json() })
       .then(data => {
         setQuestions(data)
         setShuffled(data.map(q => shuffle([q.correctAnswer, ...q.incorrectAnswers])))
@@ -48,12 +48,13 @@ export default function Quiz() {
 
   const getResultMsg = () => {
     const pct = score / questions.length
-    if (pct >= 0.9) return '🏆 Excellent! Outstanding performance!'
+    if (pct >= 0.9) return '🏆 Outstanding! You nailed it!'
     if (pct >= 0.7) return '🎉 Great job! Well done!'
-    if (pct >= 0.5) return '👍 Not bad! Keep practising.'
-    return "📚 Keep studying, you'll do better next time!"
+    if (pct >= 0.5) return '👍 Not bad! Keep practicing.'
+    return '📚 Keep studying, you\'ll do better next time!'
   }
 
+  // ── Loading ──
   if (loading) return (
     <div className="quiz-page">
       <div className="quiz-card">
@@ -66,6 +67,7 @@ export default function Quiz() {
     </div>
   )
 
+  // ── Error ──
   if (error) return (
     <div className="quiz-page">
       <div className="quiz-card">
@@ -81,6 +83,7 @@ export default function Quiz() {
     </div>
   )
 
+  // ── Finished ──
   if (finished) return (
     <div className="quiz-page">
       <div className="quiz-card">
@@ -98,6 +101,7 @@ export default function Quiz() {
     </div>
   )
 
+  // ── Quiz ──
   const q = questions[current]
   const progress = (current / questions.length) * 100
 
@@ -114,7 +118,13 @@ export default function Quiz() {
         </div>
 
         <Question current={current + 1} total={questions.length} text={q.question.text ?? q.question} />
-        <Answers answers={shuffledAnswers[current]} selected={selected} correct={q.correctAnswer} onSelect={handleSelect} />
+
+        <Answers
+          answers={shuffledAnswers[current]}
+          selected={selected}
+          correct={q.correctAnswer}
+          onSelect={handleSelect}
+        />
 
         {selected && (
           <button className="next-btn" onClick={handleNext}>
